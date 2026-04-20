@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}SportLog{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">SPORT<em>LOG</em></div>
+
+    <nav class="sidebar-nav">
+      {% block sidebar_links %}{% endblock %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+        <span class="user-role">{{ user.get_role_display }}</span>
+      </div>
+      <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+</body>
+</html>

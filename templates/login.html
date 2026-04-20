@@ -1,0 +1,53 @@
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — SportLog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-box">
+            
+            <div class="login-logo">
+                <h1>⚡ SportLog</h1>
+                <p>Sports Logistics & Parcel Management</p>
+            </div>
+            
+            {% if form.errors %}
+            <p class="login-error">Your username and password didn't match. Please try again.</p>
+            {% endif %}
+            
+            {% if next %}
+            {% if user.is_authenticated %}
+            <p class="login-error">Your account doesn't have access to this page.</p>
+            {% else %}
+            <p class="login-info">Please login to see this page.</p>
+            {% endif %}
+            {% endif %}
+            
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                </div>
+                
+                <input type="hidden" name="next" value="{{ next }}">
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+            
+        </div>
+    </div>
+</body>
+</html>

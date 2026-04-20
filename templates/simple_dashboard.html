@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}SportLog{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/simple_dashboard.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <nav class="navbar">
+    <span class="navbar-brand">SPORT<em>LOG</em></span>
+
+    <div class="navbar-links">
+      {% block nav_links %}{% endblock %}
+    </div>
+
+    <div class="navbar-user">
+      <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+      <span class="user-role">{{ user.get_role_display }}</span>
+      <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <h1>{% block page_title %}{% endblock %}</h1>
+      {% block page_actions %}{% endblock %}
+    </div>
+
+    <div class="page-content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+</body>
+</html>
