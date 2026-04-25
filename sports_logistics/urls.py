@@ -17,21 +17,29 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import include, path
-from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", views.index, name="index"),
-    path("login/", auth_views.LoginView.as_view(template_name="login.html", next_page="dashboard"), name="login"),
-    path("logout", views.logout, name="logout"),
-    path("dashboard/", views.dashboard, name="dashboard"),
+    path('admin/', admin.site.urls),
+    path('', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('dashboard/', views.dashboard, name='dashboard'),
 
     path('manager/', views.manager_dashboard, name='manager_dashboard'),
+    path('manager/items/', views.manager_items, name='manager_items'),
+    path('manager/items/<int:pk>/edit/', views.manager_item_edit, name='manager_item_edit'),
+    path('manager/items/<int:pk>/delete/', views.manager_item_delete, name='manager_item_delete'),
+    path('manager/warehouses/', views.manager_warehouses, name='manager_warehouses'),
+    path('manager/warehouses/<int:pk>/edit/', views.manager_warehouse_edit, name='manager_warehouse_edit'),
+    path('manager/warehouses/<int:pk>/delete/', views.manager_warehouse_delete, name='manager_warehouse_delete'),
+
+
     path('clerk/', views.clerk_dashboard, name='clerk_dashboard'),
     path('warehouse-manager/', views.warehouse_manager_dashboard, name='warehouse_manager_dashboard'),
     path('worker/', views.worker_dashboard, name='worker_dashboard'),
     path('courier/', views.courier_dashboard, name='courier_dashboard'),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

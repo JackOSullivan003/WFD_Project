@@ -1,0 +1,91 @@
+{% extends 'Sidebar.html' %}
+
+{% block title %}Items{% endblock %}
+
+{% block sidebar_links %}
+  <a href="{% url 'manager_dashboard' %}" class="nav-item">Dashboard</a>
+  <a href="{% url 'manager_items' %}" class="nav-item active">Items</a>
+  <a href="{% url 'manager_warehouses' %}" class="nav-item">Warehouses</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h2>Item Definitions</h2>
+</div>
+
+<div class="two-col">
+
+  <!-- item list -->
+  <div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Purchase Price</th>
+          <th>Sale Price</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>£{{ item.purchase_price }}</td>
+          <td>£{{ item.sale_price }}</td>
+          <td class="row-actions">
+            <a href="{% url 'manager_item_edit' item.pk %}" class="action-link">Edit</a>
+            <form method="post" action="{% url 'manager_item_delete' item.pk %}" style="display:inline">
+              {% csrf_token %}
+              <button type="submit" class="action-link danger"
+                onclick="return confirm('Delete {{ item.name }}?')">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4">No items defined yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- create or edit form -->
+  <div class="form-panel">
+    {% if editing %}
+      <h3>Edit Item</h3>
+      <form method="post" action="{% url 'manager_item_edit' editing.pk %}" enctype="multipart/form-data">
+    {% else %}
+      <h3>Add New Item</h3>
+      <form method="post" enctype="multipart/form-data">
+    {% endif %}
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" value="{{ editing.name|default:'' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Purchase Price (£)</label>
+        <input type="number" name="purchase_price" step="0.01" min="0"
+          value="{{ editing.purchase_price|default:'' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Sale Price (£)</label>
+        <input type="number" name="sale_price" step="0.01" min="0"
+          value="{{ editing.sale_price|default:'' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Image (optional)</label>
+        <input type="file" name="image" accept="image/*">
+      </div>
+      <div class="btn-row">
+        <button type="submit" class="btn">{% if editing %}Save Changes{% else %}Add Item{% endif %}</button>
+        {% if editing %}
+          <a href="{% url 'manager_items' %}" class="btn btn-secondary">Cancel</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

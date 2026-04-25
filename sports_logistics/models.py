@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 class User(AbstractUser):
     ROLE_COMPANY_MANAGER = 'company_manager'
     ROLE_ORDER_CLERK = 'order_clerk'
@@ -42,7 +41,7 @@ class User(AbstractUser):
 class ItemDefinition(models.Model):
     # items the company sells, defined by the company manager
     name = models.CharField(max_length=200)
-    image = models.ImageField(upload_to='items/', blank=True, null=True)
+    image = models.ImageField(upload_to='items/', blank=True, null=True) #ImageField is a field that allows storage and use of images: https://docs.djangoproject.com/en/6.0/ref/models/fields/#django.db.models.ImageField
     purchase_price = models.DecimalField(max_digits=10, decimal_places=2)
     sale_price = models.DecimalField(max_digits=10, decimal_places=2)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_items')

@@ -1,0 +1,8 @@
+<!-- courier/dashboard.html -->
+{% extends 'simple_dashboard.html' %}
+
+{% block page_title %}Deliveries{% endblock %}
+
+{% block content %}
+<p>Logged in as: {{ user.username }} ({{ user.get_role_display }})</p>
+{% endblock %}

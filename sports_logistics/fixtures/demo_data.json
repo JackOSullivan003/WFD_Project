@@ -1,0 +1,397 @@
+[
+  {
+    "model": "sports_logistics.user",
+    "pk": 10,
+    "fields": {
+      "username": "manager1",
+      "password": "pbkdf2_sha256$1200000$gf1ld6moxSiGql2Uf9ydGE$gaySLXMHqJCjvBcOf4CoyxaZOJl2h+tUpnMw7Y+UP1s=",
+      "email": "manager1@sportlog.com",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "company_manager",
+      "phone": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "sports_logistics.user",
+    "pk": 11,
+    "fields": {
+      "username": "clerk1",
+      "password": "pbkdf2_sha256$1200000$gf1ld6moxSiGql2Uf9ydGE$gaySLXMHqJCjvBcOf4CoyxaZOJl2h+tUpnMw7Y+UP1s=",
+      "email": "clerk1@sportlog.com",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "order_clerk",
+      "phone": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "sports_logistics.user",
+    "pk": 12,
+    "fields": {
+      "username": "wmanager1",
+      "password": "pbkdf2_sha256$1200000$gf1ld6moxSiGql2Uf9ydGE$gaySLXMHqJCjvBcOf4CoyxaZOJl2h+tUpnMw7Y+UP1s=",
+      "email": "wmanager1@sportlog.com",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "warehouse_manager",
+      "phone": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "sports_logistics.user",
+    "pk": 13,
+    "fields": {
+      "username": "wmanager2",
+      "password": "pbkdf2_sha256$1200000$gf1ld6moxSiGql2Uf9ydGE$gaySLXMHqJCjvBcOf4CoyxaZOJl2h+tUpnMw7Y+UP1s=",
+      "email": "wmanager2@sportlog.com",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "warehouse_manager",
+      "phone": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "sports_logistics.user",
+    "pk": 14,
+    "fields": {
+      "username": "worker1",
+      "password": "pbkdf2_sha256$1200000$gf1ld6moxSiGql2Uf9ydGE$gaySLXMHqJCjvBcOf4CoyxaZOJl2h+tUpnMw7Y+UP1s=",
+      "email": "worker1@sportlog.com",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "warehouse_worker",
+      "phone": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "sports_logistics.user",
+    "pk": 15,
+    "fields": {
+      "username": "worker2",
+      "password": "pbkdf2_sha256$1200000$gf1ld6moxSiGql2Uf9ydGE$gaySLXMHqJCjvBcOf4CoyxaZOJl2h+tUpnMw7Y+UP1s=",
+      "email": "worker2@sportlog.com",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "warehouse_worker",
+      "phone": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "sports_logistics.user",
+    "pk": 16,
+    "fields": {
+      "username": "courier1",
+      "password": "pbkdf2_sha256$1200000$gf1ld6moxSiGql2Uf9ydGE$gaySLXMHqJCjvBcOf4CoyxaZOJl2h+tUpnMw7Y+UP1s=",
+      "email": "courier1@sportlog.com",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "courier",
+      "phone": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "sports_logistics.user",
+    "pk": 17,
+    "fields": {
+      "username": "courier2",
+      "password": "pbkdf2_sha256$1200000$gf1ld6moxSiGql2Uf9ydGE$gaySLXMHqJCjvBcOf4CoyxaZOJl2h+tUpnMw7Y+UP1s=",
+      "email": "courier2@sportlog.com",
+      "is_staff": false,
+      "is_active": true,
+      "is_superuser": false,
+      "role": "courier",
+      "phone": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+
+  {
+    "model": "sports_logistics.warehouse",
+    "pk": 1,
+    "fields": {
+      "name": "North Depot",
+      "location": "Manchester",
+      "manager": 12
+    }
+  },
+  {
+    "model": "sports_logistics.warehouse",
+    "pk": 2,
+    "fields": {
+      "name": "South Depot",
+      "location": "London",
+      "manager": 13
+    }
+  },
+
+  {
+    "model": "sports_logistics.itemdefinition",
+    "pk": 1,
+    "fields": {
+      "name": "Football",
+      "image": "",
+      "purchase_price": "8.00",
+      "sale_price": "19.99",
+      "created_by": 10
+    }
+  },
+  {
+    "model": "sports_logistics.itemdefinition",
+    "pk": 2,
+    "fields": {
+      "name": "Football Boots (Size 10)",
+      "image": "",
+      "purchase_price": "35.00",
+      "sale_price": "79.99",
+      "created_by": 10
+    }
+  },
+  {
+    "model": "sports_logistics.itemdefinition",
+    "pk": 3,
+    "fields": {
+      "name": "Training Cones (Set of 20)",
+      "image": "",
+      "purchase_price": "5.00",
+      "sale_price": "12.99",
+      "created_by": 10
+    }
+  },
+  {
+    "model": "sports_logistics.itemdefinition",
+    "pk": 4,
+    "fields": {
+      "name": "Goalkeeper Gloves",
+      "image": "",
+      "purchase_price": "18.00",
+      "sale_price": "44.99",
+      "created_by": 10
+    }
+  },
+  {
+    "model": "sports_logistics.itemdefinition",
+    "pk": 5,
+    "fields": {
+      "name": "Training Bib Set (10 pack)",
+      "image": "",
+      "purchase_price": "12.00",
+      "sale_price": "29.99",
+      "created_by": 10
+    }
+  },
+
+  {
+    "model": "sports_logistics.stock",
+    "pk": 1,
+    "fields": {
+      "warehouse": 1,
+      "item": 1,
+      "quantity": 50
+    }
+  },
+  {
+    "model": "sports_logistics.stock",
+    "pk": 2,
+    "fields": {
+      "warehouse": 1,
+      "item": 2,
+      "quantity": 30
+    }
+  },
+  {
+    "model": "sports_logistics.stock",
+    "pk": 3,
+    "fields": {
+      "warehouse": 1,
+      "item": 3,
+      "quantity": 20
+    }
+  },
+  {
+    "model": "sports_logistics.stock",
+    "pk": 4,
+    "fields": {
+      "warehouse": 2,
+      "item": 1,
+      "quantity": 40
+    }
+  },
+  {
+    "model": "sports_logistics.stock",
+    "pk": 5,
+    "fields": {
+      "warehouse": 2,
+      "item": 4,
+      "quantity": 15
+    }
+  },
+  {
+    "model": "sports_logistics.stock",
+    "pk": 6,
+    "fields": {
+      "warehouse": 2,
+      "item": 5,
+      "quantity": 25
+    }
+  },
+
+  {
+    "model": "sports_logistics.order",
+    "pk": 1,
+    "fields": {
+      "order_number": "ORD-0001",
+      "organisation": "Riverside FC",
+      "delivery_address": "12 Riverside Lane, Leeds, LS1 4AP",
+      "delivery_date": "2025-05-10",
+      "status": "pending",
+      "warehouse": 1,
+      "clerk": 11,
+      "assigned_worker": null,
+      "assigned_courier": null,
+      "delivery_fee": "9.99",
+      "total_charge": "0.00",
+      "notes": "",
+      "created_at": "2025-04-20T09:00:00Z",
+      "updated_at": "2025-04-20T09:00:00Z"
+    }
+  },
+  {
+    "model": "sports_logistics.order",
+    "pk": 2,
+    "fields": {
+      "order_number": "ORD-0002",
+      "organisation": "City Sports Academy",
+      "delivery_address": "88 Academy Road, Birmingham, B5 7TT",
+      "delivery_date": "2025-05-12",
+      "status": "accepted",
+      "warehouse": 1,
+      "clerk": 11,
+      "assigned_worker": null,
+      "assigned_courier": null,
+      "delivery_fee": "9.99",
+      "total_charge": "0.00",
+      "notes": "Urgent - needed for tournament",
+      "created_at": "2025-04-20T10:00:00Z",
+      "updated_at": "2025-04-20T10:30:00Z"
+    }
+  },
+  {
+    "model": "sports_logistics.order",
+    "pk": 3,
+    "fields": {
+      "order_number": "ORD-0003",
+      "organisation": "Southside United",
+      "delivery_address": "3 Park View, London, SE1 2AB",
+      "delivery_date": "2025-05-08",
+      "status": "ready",
+      "warehouse": 2,
+      "clerk": 11,
+      "assigned_worker": 14,
+      "assigned_courier": null,
+      "delivery_fee": "9.99",
+      "total_charge": "0.00",
+      "notes": "",
+      "created_at": "2025-04-19T14:00:00Z",
+      "updated_at": "2025-04-20T11:00:00Z"
+    }
+  },
+
+  {
+    "model": "sports_logistics.orderitem",
+    "pk": 1,
+    "fields": {
+      "order": 1,
+      "item": 1,
+      "quantity": 5,
+      "packed": false
+    }
+  },
+  {
+    "model": "sports_logistics.orderitem",
+    "pk": 2,
+    "fields": {
+      "order": 1,
+      "item": 3,
+      "quantity": 2,
+      "packed": false
+    }
+  },
+  {
+    "model": "sports_logistics.orderitem",
+    "pk": 3,
+    "fields": {
+      "order": 2,
+      "item": 2,
+      "quantity": 10,
+      "packed": false
+    }
+  },
+  {
+    "model": "sports_logistics.orderitem",
+    "pk": 4,
+    "fields": {
+      "order": 2,
+      "item": 5,
+      "quantity": 3,
+      "packed": false
+    }
+  },
+  {
+    "model": "sports_logistics.orderitem",
+    "pk": 5,
+    "fields": {
+      "order": 3,
+      "item": 4,
+      "quantity": 2,
+      "packed": true
+    }
+  },
+  {
+    "model": "sports_logistics.orderitem",
+    "pk": 6,
+    "fields": {
+      "order": 3,
+      "item": 1,
+      "quantity": 4,
+      "packed": true
+    }
+  },
+
+  {
+    "model": "sports_logistics.stocktransfer",
+    "pk": 1,
+    "fields": {
+      "from_warehouse": 2,
+      "to_warehouse": 1,
+      "item": 4,
+      "quantity": 5,
+      "status": "requested",
+      "requested_by": 13,
+      "courier": null,
+      "created_at": "2025-04-20T08:00:00Z"
+    }
+  }
+]
