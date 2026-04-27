@@ -1,8 +1,55 @@
-<!-- clerk/dashboard.html -->
 {% extends 'simple_dashboard.html' %}
+
+{% block title %}Orders{% endblock %}
+
+{% block nav_links %}
+  <a href="{% url 'clerk_dashboard' %}" class="nav-item active">My Orders</a>
+{% endblock %}
 
 {% block page_title %}Orders{% endblock %}
 
+{% block page_actions %}
+  <a href="{% url 'clerk_create_order' %}" class="btn">+ New Order</a>
+{% endblock %}
+
 {% block content %}
-<p>Logged in as: {{ user.username }} ({{ user.get_role_display }})</p>
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Order No.</th>
+      <th>Organisation</th>
+      <th>Warehouse</th>
+      <th>Delivery Date</th>
+      <th>Total</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    <tr>
+      <td>{{ order.order_number }}</td>
+      <td>{{ order.organisation }}</td>
+      <td>{{ order.warehouse.name|default:"—" }}</td>
+      <td>{{ order.delivery_date|date:"d M Y" }}</td>
+      <td>£{{ order.total_charge }}</td>
+      <td>{{ order.get_status_display }}</td>
+      <td class="row-actions">
+        {% if order.status == 'pending' %}
+        <a href="{% url 'clerk_edit_order' order.pk %}" class="action-link">Edit</a>
+        <form method="post" action="{% url 'clerk_cancel_order' order.pk %}" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" class="action-link danger"
+            onclick="return confirm('Cancel order {{ order.order_number }}?')">Cancel</button>
+        </form>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="7">No orders yet. Create one to get started.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}

@@ -38,8 +38,23 @@ urlpatterns = [
 
 
     path('clerk/', views.clerk_dashboard, name='clerk_dashboard'),
+    path('clerk/orders/create/', views.clerk_create_order, name='clerk_create_order'),
+    path('clerk/orders/<int:pk>/edit/', views.clerk_edit_order, name='clerk_edit_order'),
+    path('clerk/orders/<int:pk>/cancel/', views.clerk_cancel_order, name='clerk_cancel_order'),
+
+
     path('warehouse-manager/', views.warehouse_manager_dashboard, name='warehouse_manager_dashboard'),
+    path('warehouse-manager/stock/', views.warehouse_manager_stock, name='warehouse_manager_stock'),
+    path('warehouse-manager/transfers/', views.warehouse_manager_transfers, name='warehouse_manager_transfers'),
+
+
     path('worker/', views.worker_dashboard, name='worker_dashboard'),
+    path('worker/orders/<int:pk>/', views.worker_order, name='worker_order'),
+
     path('courier/', views.courier_dashboard, name='courier_dashboard'),
+    path('courier/orders/<int:pk>/claim/', views.courier_claim_order, name='courier_claim_order'),
+    path('courier/orders/<int:pk>/deliver/', views.courier_deliver_order, name='courier_deliver_order'),
+    path('courier/transfers/<int:pk>/claim/', views.courier_claim_transfer, name='courier_claim_transfer'),
+    path('courier/transfers/<int:pk>/complete/', views.courier_complete_transfer, name='courier_complete_transfer'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

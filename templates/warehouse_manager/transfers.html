@@ -1,0 +1,124 @@
+{% extends 'simple_dashboard.html' %}
+
+{% block title %}Transfers{% endblock %}
+
+{% block nav_links %}
+  <a href="{% url 'warehouse_manager_dashboard' %}" class="nav-item">Orders</a>
+  <a href="{% url 'warehouse_manager_stock' %}" class="nav-item">Stock</a>
+  <a href="{% url 'warehouse_manager_transfers' %}" class="nav-item active">Transfers</a>
+{% endblock %}
+
+{% block page_title %}Stock Transfers{% endblock %}
+
+{% block content %}
+<div class="two-col">
+
+  <!-- transfer history -->
+  <div>
+    <h3 class="section-heading">Outgoing Transfers</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Qty</th>
+          <th>To</th>
+          <th>Status</th>
+          <th>Courier</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for transfer in outgoing %}
+        <tr>
+          <td>{{ transfer.item.name }}</td>
+          <td>{{ transfer.quantity }}</td>
+          <td>{{ transfer.to_warehouse.name }}</td>
+          <td>{{ transfer.get_status_display }}</td>
+          <td>{{ transfer.courier.get_full_name|default:"Unassigned" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No outgoing transfers.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h3 class="section-heading">Incoming Transfers</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Qty</th>
+          <th>From</th>
+          <th>Status</th>
+          <th>Courier</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for transfer in incoming %}
+        <tr>
+          <td>{{ transfer.item.name }}</td>
+          <td>{{ transfer.quantity }}</td>
+          <td>{{ transfer.from_warehouse.name }}</td>
+          <td>{{ transfer.get_status_display }}</td>
+          <td>{{ transfer.courier.get_full_name|default:"Unassigned" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No incoming transfers.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- request a transfer -->
+  <div class="form-panel">
+    <h3>Request Transfer</h3>
+    {% if available_stock and other_warehouses %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Item</label>
+        <select name="item_id" required>
+          <option value="">-- Select Item --</option>
+          {% for stock in available_stock %}
+          <option value="{{ stock.item.pk }}">
+            {{ stock.item.name }} ({{ stock.quantity }} available)
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" name="quantity" min="1" value="1" required>
+      </div>
+      <div class="form-group">
+        <label>Send To</label>
+        <select name="to_warehouse" required>
+          <option value="">-- Select Warehouse --</option>
+          {% for wh in other_warehouses %}
+          <option value="{{ wh.pk }}">{{ wh.name }} ({{ wh.location }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn">Request Transfer</button>
+    </form>
+    {% elif not available_stock %}
+    <p style="color:var(--muted); font-size:13px">No stock available to transfer.</p>
+    {% elif not other_warehouses %}
+    <p style="color:var(--muted); font-size:13px">No other warehouses to transfer to.</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<style>
+  .section-heading {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 28px 0 10px;
+  }
+  .section-heading:first-child { margin-top: 0; }
+</style>
+
+{% endblock %}

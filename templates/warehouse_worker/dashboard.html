@@ -1,8 +1,49 @@
 <!-- warehouse_worker/dashboard.html -->
 {% extends 'simple_dashboard.html' %}
 
-{% block page_title %}Orders{% endblock %}
+{% block title %}Orders{% endblock %}
+
+{% block nav_links %}
+  <a href="{% url 'worker_dashboard' %}" class="nav-item active">Orders</a>
+{% endblock %}
+
+{% block page_title %}Orders to Pack{% endblock %}
 
 {% block content %}
-<p>Logged in as: {{ user.username }} ({{ user.get_role_display }})</p>
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Order No.</th>
+      <th>Organisation</th>
+      <th>Warehouse</th>
+      <th>Delivery Date</th>
+      <th>Items</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for order in orders %}
+    <tr>
+      <td>{{ order.order_number }}</td>
+      <td>{{ order.organisation }}</td>
+      <td>{{ order.warehouse.name }}</td>
+      <td>{{ order.delivery_date|date:"d M Y" }}</td>
+      <td>
+        {% for oi in order.order_items.all %}
+          {{ oi.quantity }}x {{ oi.item.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </td>
+      <td>{{ order.get_status_display }}</td>
+      <td>
+        <a href="{% url 'worker_order' order.pk %}" class="action-link">Pack</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="7">No orders to pack at the moment.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}

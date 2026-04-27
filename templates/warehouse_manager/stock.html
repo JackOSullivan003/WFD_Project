@@ -1,0 +1,87 @@
+{% extends 'simple_dashboard.html' %}
+
+{% block title %}Stock{% endblock %}
+
+{% block nav_links %}
+  <a href="{% url 'warehouse_manager_dashboard' %}" class="nav-item">Orders</a>
+  <a href="{% url 'warehouse_manager_stock' %}" class="nav-item active">Stock</a>
+  <a href="{% url 'warehouse_manager_transfers' %}" class="nav-item">Transfers</a>
+{% endblock %}
+
+{% block page_title %}Stock — {{ warehouse.name }}{% endblock %}
+
+{% block content %}
+<div class="two-col">
+
+  <!-- current stock -->
+  <div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for stock in current_stock %}
+        <tr>
+          <td>{{ stock.item.name }}</td>
+          <td>
+            <form method="post" style="display:flex; gap:8px; align-items:center">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="update">
+              <input type="hidden" name="stock_id" value="{{ stock.pk }}">
+              <input type="number" name="quantity" value="{{ stock.quantity }}"
+                min="0" style="width:70px">
+              <button type="submit" class="action-link">Save</button>
+            </form>
+          </td>
+          <td class="row-actions">
+            <form method="post" style="display:inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="remove">
+              <input type="hidden" name="stock_id" value="{{ stock.pk }}">
+              <button type="submit" class="action-link danger"
+                onclick="return confirm('Remove {{ stock.item.name }} from stock?')">Remove</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">No stock recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- add item to stock -->
+  <div class="form-panel">
+    <h3>Add Item to Stock</h3>
+    {% if unstocked_items %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add">
+      <div class="form-group">
+        <label>Item</label>
+        <select name="item_id" required>
+          <option value="">-- Select Item --</option>
+          {% for item in unstocked_items %}
+          <option value="{{ item.pk }}">{{ item.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" name="quantity" min="1" value="1" required>
+      </div>
+      <button type="submit" class="btn">Add to Stock</button>
+    </form>
+    {% else %}
+    <p style="color:var(--muted); font-size:13px">
+      All available items are already in stock.
+    </p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

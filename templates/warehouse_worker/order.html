@@ -1,0 +1,143 @@
+{% extends 'simple_dashboard.html' %}
+
+{% block title %}Pack Order{% endblock %}
+
+{% block nav_links %}
+  <a href="{% url 'worker_dashboard' %}" class="nav-item">Orders</a>
+{% endblock %}
+
+{% block page_title %}{{ order.order_number }}{% endblock %}
+
+{% block page_actions %}
+  <a href="{% url 'worker_dashboard' %}" class="btn btn-secondary">Back</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="two-col">
+
+  <!-- order info -->
+  <div>
+    <div class="form-panel" style="margin-bottom: 20px;">
+      <h3>Order Details</h3>
+      <div class="detail-row">
+        <span class="detail-label">Organisation</span>
+        <span>{{ order.organisation }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Warehouse</span>
+        <span>{{ order.warehouse.name }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Delivery Address</span>
+        <span>{{ order.delivery_address }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Delivery Date</span>
+        <span>{{ order.delivery_date|date:"d M Y" }}</span>
+      </div>
+      {% if order.notes %}
+      <div class="detail-row">
+        <span class="detail-label">Notes</span>
+        <span>{{ order.notes }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if all_packed %}
+    <div class="status-notice ready">
+      All items packed. This order is ready for courier collection.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- item checklist -->
+  <div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Qty</th>
+          <th>Packed</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr class="{% if item.packed %}row-packed{% endif %}">
+          <td>{{ item.item.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>
+            {% if item.packed %}
+            <span class="packed-tag">Yes</span>
+            {% else %}
+            <span style="color:var(--muted)">No</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if not item.packed %}
+            <form method="post" style="display:inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="pack_item">
+              <input type="hidden" name="order_item_id" value="{{ item.pk }}">
+              <button type="submit" class="action-link">Mark Packed</button>
+            </form>
+            {% elif order.status != 'ready' %}
+            <form method="post" style="display:inline">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="unpack_item">
+              <input type="hidden" name="order_item_id" value="{{ item.pk }}">
+              <button type="submit" class="action-link danger">Undo</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<style>
+  .detail-row {
+    display: flex;
+    gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-label {
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    min-width: 120px;
+    padding-top: 1px;
+  }
+  .packed-tag {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--green);
+    letter-spacing: 0.05em;
+  }
+  .row-packed td {
+    opacity: 0.5;
+  }
+  .status-notice {
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .status-notice.ready {
+    background: rgba(61, 220, 132, 0.1);
+    border: 1px solid rgba(61, 220, 132, 0.3);
+    color: var(--green);
+  }
+</style>
+
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'simple_dashboard.html' %}
+
+{% block title %}New Order{% endblock %}
+
+{% block nav_links %}
+  <a href="{% url 'clerk_dashboard' %}" class="nav-item">My Orders</a>
+{% endblock %}
+
+{% block page_title %}New Order{% endblock %}
+
+{% block page_actions %}
+  <a href="{% url 'clerk_dashboard' %}" class="btn btn-secondary">Cancel</a>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <div class="two-col">
+
+    <!-- left: order details -->
+    <div class="form-panel">
+      <h3>Order Details</h3>
+
+      <div class="form-group">
+        <label>Organisation / Customer Name</label>
+        <input type="text" name="organisation" value="{{ order.organisation|default:'' }}"  required>
+      </div>
+
+      <div class="form-group">
+        <label>Delivery Address</label>
+        <textarea name="delivery_address" rows="3" value="{{ order.delivery_address|default:'' }}" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Delivery Date</label>
+        <input type="date" name="delivery_date" value="{{ order.delivery_date|default:'' }}" required>
+      </div>
+
+      <div class="form-group">
+        <label>Warehouse</label>
+        <select name="warehouse" value="{{ order.warehouse.pk|default:'' }}" required>
+          <option value="">-- Select Warehouse --</option>
+          {% for warehouse in warehouses %}
+          <option value="{{ warehouse.pk }}">{{ warehouse.name }} ({{ warehouse.location }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Delivery Fee (£)</label>
+        <input type="number" name="delivery_fee" step="0.01" min="0" value="{{order.delivery_fee|default:'9.99'}}">
+      </div>
+
+      <div class="form-group">
+        <label>Notes (optional)</label>
+        <textarea name="notes" rows="2"></textarea>
+      </div>
+    </div>
+
+    <!-- right: items -->
+    <div class="form-panel">
+      <h3>Items</h3>
+
+      <div id="item-rows">
+        <!-- item rows added here by JS -->
+      </div>
+
+      <button type="button" class="btn btn-secondary" id="add-item-btn">+ Add Item</button>
+
+      <div id="order-total" style="margin-top: 20px; font-size: 15px; font-weight: 600;">
+        Total: £<span id="total-value">0.00</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="btn-row">
+    <button type="submit" class="btn">{% if order %}Save Changes{% else %}Create Order{% endif %}</button>
+    {% if order %}
+    <a href="{% url 'clerk_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    {% endif %}
+  
+  </div>
+
+</form>
+
+<!-- item row template (hidden) -->
+<template id="item-row-template">
+  <div class="item-row">
+    <select name="item_id" class="item-select" required>
+      <option value="">-- Select Item --</option>
+      {% for item in items %}
+      <option value="{{ item.pk }}" data-price="{{ item.sale_price }}">
+        {{ item.name }} (£{{ item.sale_price }})
+      </option>
+      {% endfor %}
+    </select>
+    <input type="number" name="quantity" class="item-qty" min="1" value="1" required>
+    <button type="button" class="action-link danger remove-row-btn">Remove</button>
+  </div>
+</template>
+
+<style>
+  .item-row {
+    display: grid;
+    grid-template-columns: 1fr 80px auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  textarea {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    color: var(--text);
+    font-size: 13px;
+    width: 100%;
+    resize: vertical;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+</style>
+
+<script>
+//javascript to handle creating multiple row entries for order items 
+  const container = document.getElementById('item-rows');
+  const template = document.getElementById('item-row-template');
+  const totalEl = document.getElementById('total-value');
+
+  function addRow() {
+    const row = template.content.cloneNode(true);
+    container.appendChild(row);
+    updateTotal();
+    bindRowEvents(container.lastElementChild);
+  }
+
+  function bindRowEvents(row) {
+    row.querySelector('.item-select').addEventListener('change', updateTotal);
+    row.querySelector('.item-qty').addEventListener('input', updateTotal);
+    row.querySelector('.remove-row-btn').addEventListener('click', () => {
+      row.remove();
+      updateTotal();
+    });
+  }
+
+  function updateTotal() {
+    let total = 0;
+    container.querySelectorAll('.item-row').forEach(row => {
+      const select = row.querySelector('.item-select');
+      const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+      const price = parseFloat(select.selectedOptions[0]?.dataset.price) || 0;
+      total += price * qty;
+    });
+    totalEl.textContent = total.toFixed(2);
+  }
+
+  document.getElementById('add-item-btn').addEventListener('click', addRow);
+
+  // start with one row
+  addRow();
+</script>
+{% endblock %}

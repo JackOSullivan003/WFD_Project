@@ -1,8 +1,172 @@
 <!-- courier/dashboard.html -->
 {% extends 'simple_dashboard.html' %}
 
-{% block page_title %}Deliveries{% endblock %}
+{% block title %}Courier Dashboard{% endblock %}
+
+{% block nav_links %}
+  <a href="{% url 'courier_dashboard' %}" class="nav-item active">Dashboard</a>
+{% endblock %}
+
+{% block page_title %}Courier Dashboard{% endblock %}
 
 {% block content %}
-<p>Logged in as: {{ user.username }} ({{ user.get_role_display }})</p>
+
+  <!-- available orders -->
+  <h3 class="section-heading">Orders Ready for Collection</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Order No.</th>
+        <th>Organisation</th>
+        <th>Collect From</th>
+        <th>Deliver To</th>
+        <th>Delivery Date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in available_orders %}
+      <tr>
+        <td>{{ order.order_number }}</td>
+        <td>{{ order.organisation }}</td>
+        <td>{{ order.warehouse.name }} — {{ order.warehouse.location }}</td>
+        <td>{{ order.delivery_address }}</td>
+        <td>{{ order.delivery_date|date:"d M Y" }}</td>
+        <td>
+          <form method="post" action="{% url 'courier_claim_order' order.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="action-link">Claim</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">No orders available for collection.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- my active orders -->
+  <h3 class="section-heading">My Active Deliveries</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Order No.</th>
+        <th>Organisation</th>
+        <th>Collect From</th>
+        <th>Deliver To</th>
+        <th>Delivery Date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in my_orders %}
+      <tr>
+        <td>{{ order.order_number }}</td>
+        <td>{{ order.organisation }}</td>
+        <td>{{ order.warehouse.name }} — {{ order.warehouse.location }}</td>
+        <td>{{ order.delivery_address }}</td>
+        <td>{{ order.delivery_date|date:"d M Y" }}</td>
+        <td>
+          <form method="post" action="{% url 'courier_deliver_order' order.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="action-link"
+              onclick="return confirm('Mark order {{ order.order_number }} as delivered?')">
+              Mark Delivered
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">No active deliveries.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- available transfers -->
+  <h3 class="section-heading">Stock Transfers Available</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Qty</th>
+        <th>Collect From</th>
+        <th>Deliver To</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for transfer in available_transfers %}
+      <tr>
+        <td>{{ transfer.item.name }}</td>
+        <td>{{ transfer.quantity }}</td>
+        <td>{{ transfer.from_warehouse.name }} — {{ transfer.from_warehouse.location }}</td>
+        <td>{{ transfer.to_warehouse.name }} — {{ transfer.to_warehouse.location }}</td>
+        <td>
+          <form method="post" action="{% url 'courier_claim_transfer' transfer.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="action-link">Claim</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">No transfers available.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- my active transfers -->
+  <h3 class="section-heading">My Active Transfers</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Qty</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for transfer in my_transfers %}
+      <tr>
+        <td>{{ transfer.item.name }}</td>
+        <td>{{ transfer.quantity }}</td>
+        <td>{{ transfer.from_warehouse.name }}</td>
+        <td>{{ transfer.to_warehouse.name }}</td>
+        <td>{{ transfer.get_status_display }}</td>
+        <td>
+          <form method="post" action="{% url 'courier_complete_transfer' transfer.pk %}">
+            {% csrf_token %}
+            {% if transfer.status == 'assigned' %}
+            <button type="submit" name="action" value="in_transit" class="action-link">
+              Mark In Transit
+            </button>
+            {% elif transfer.status == 'in_transit' %}
+            <button type="submit" name="action" value="complete" class="action-link"
+              onclick="return confirm('Mark this transfer as completed?')">
+              Complete
+            </button>
+            {% endif %}
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">No active transfers.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+<style>
+  .section-heading {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 28px 0 10px;
+  }
+  .section-heading:first-child { margin-top: 0; }
+</style>
+
 {% endblock %}
