@@ -280,6 +280,8 @@ def clerk_edit_order(request, pk):
         item_ids = request.POST.getlist('item_id')
         quantities = request.POST.getlist('quantity')
 
+        order.order_items.all().delete()
+
         for item_id, quantity in zip(item_ids, quantities):
                 try:
                     item = ItemDefinition.objects.get(pk=item_id)
@@ -288,15 +290,24 @@ def clerk_edit_order(request, pk):
                         OrderItem.objects.create(order=order, item=item, quantity=qty)
                 except (ItemDefinition.DoesNotExist, ValueError):
                     pass
- 
+        order.save()
         order.recalculate_total()
         return redirect('clerk_dashboard')
     warehouses = Warehouse.objects.all()
     items = ItemDefinition.objects.all().order_by('name')
+    order_items = [
+        {
+            "item_id": oi.item.pk,
+            "quantity": oi.quantity,
+        }
+        for oi in order.order_items.all()
+    ]
+
     return render(request, 'clerk/order.html', {
         'warehouses': warehouses, 
         'items': items,
         'order': order,
+        'order_items': order_items,
     })
 
 

@@ -2,85 +2,90 @@
 
 {% block title %}New Order{% endblock %}
 
+
 {% block nav_links %}
-  <a href="{% url 'clerk_dashboard' %}" class="nav-item">My Orders</a>
+<a href="{% url 'clerk_dashboard' %}" class="nav-item">My Orders</a>
 {% endblock %}
 
 {% block page_title %}New Order{% endblock %}
 
 {% block page_actions %}
-  <a href="{% url 'clerk_dashboard' %}" class="btn btn-secondary">Cancel</a>
+<a href="{% url 'clerk_dashboard' %}" class="btn btn-secondary">Cancel</a>
 {% endblock %}
 
 {% block content %}
 <form method="post">
   {% csrf_token %}
   <div class="two-col">
-
+    
     <!-- left: order details -->
     <div class="form-panel">
       <h3>Order Details</h3>
-
+      
       <div class="form-group">
         <label>Organisation / Customer Name</label>
         <input type="text" name="organisation" value="{{ order.organisation|default:'' }}"  required>
       </div>
-
+      
       <div class="form-group">
         <label>Delivery Address</label>
-        <textarea name="delivery_address" rows="3" value="{{ order.delivery_address|default:'' }}" required></textarea>
+        <textarea name="delivery_address" rows="3" required>{{ order.delivery_address|default:'' }}</textarea>
       </div>
-
+      
       <div class="form-group">
         <label>Delivery Date</label>
-        <input type="date" name="delivery_date" value="{{ order.delivery_date|default:'' }}" required>
+        <input type="date" name="delivery_date" value="{{ order.delivery_date|date:'Y-m-d'|default:'' }}" required>
       </div>
-
+      
       <div class="form-group">
         <label>Warehouse</label>
-        <select name="warehouse" value="{{ order.warehouse.pk|default:'' }}" required>
+        <select name="warehouse" required>
           <option value="">-- Select Warehouse --</option>
           {% for warehouse in warehouses %}
-          <option value="{{ warehouse.pk }}">{{ warehouse.name }} ({{ warehouse.location }})</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Delivery Fee (£)</label>
-        <input type="number" name="delivery_fee" step="0.01" min="0" value="{{order.delivery_fee|default:'9.99'}}">
-      </div>
-
-      <div class="form-group">
-        <label>Notes (optional)</label>
-        <textarea name="notes" rows="2"></textarea>
-      </div>
+          <option value="{{ warehouse.pk }}"
+          {% if order.warehouse and warehouse.pk == order.warehouse.pk %}selected{% endif %}>
+          {{ warehouse.name }} ({{ warehouse.location }})
+        </option>
+        {% endfor %}
+      </select>
     </div>
-
-    <!-- right: items -->
-    <div class="form-panel">
-      <h3>Items</h3>
-
-      <div id="item-rows">
-        <!-- item rows added here by JS -->
-      </div>
-
-      <button type="button" class="btn btn-secondary" id="add-item-btn">+ Add Item</button>
-
-      <div id="order-total" style="margin-top: 20px; font-size: 15px; font-weight: 600;">
-        Total: £<span id="total-value">0.00</span>
-      </div>
+    
+    <div class="form-group">
+      <label>Delivery Fee (£)</label>
+      <input type="number" name="delivery_fee" step="0.01" min="0" value="{{order.delivery_fee|default:'9.99'}}">
     </div>
-
+    
+    <div class="form-group">
+      <label>Notes (optional)</label>
+      <textarea name="notes" rows="2">{{ order.notes|default:'' }}</textarea>
+    </div>
   </div>
-
-  <div class="btn-row">
-    <button type="submit" class="btn">{% if order %}Save Changes{% else %}Create Order{% endif %}</button>
-    {% if order %}
-    <a href="{% url 'clerk_dashboard' %}" class="btn btn-secondary">Cancel</a>
-    {% endif %}
   
+  <!-- right: items -->
+  <div class="form-panel">
+    <h3>Items</h3>
+    
+    <div id="item-rows">
+      <!-- item rows added here by JS -->
+      {{ order_items|json_script:"order-items-data" }}
+    </div>
+    
+    <button type="button" class="btn btn-secondary" id="add-item-btn">+ Add Item</button>
+    
+    <div id="order-total" style="margin-top: 20px; font-size: 15px; font-weight: 600;">
+      Total: £<span id="total-value">0.00</span>
+    </div>
   </div>
+  
+</div>
+
+<div class="btn-row">
+  <button type="submit" class="btn">{% if order %}Save Changes{% else %}Create Order{% endif %}</button>
+  {% if order %}
+  <a href="{% url 'clerk_dashboard' %}" class="btn btn-secondary">Cancel</a>
+  {% endif %}
+  
+</div>
 
 </form>
 
@@ -122,21 +127,29 @@
     outline: none;
     border-color: var(--accent);
   }
-</style>
+  </style>
 
 <script>
-//javascript to handle creating multiple row entries for order items 
+  //javascript to handle creating multiple row entries for order items 
   const container = document.getElementById('item-rows');
   const template = document.getElementById('item-row-template');
   const totalEl = document.getElementById('total-value');
-
-  function addRow() {
+  
+  function addRow(itemId = "", quantity = 1) {
     const row = template.content.cloneNode(true);
     container.appendChild(row);
+    
+    const newRow = container.lastElementChild;
+    const select = newRow.querySelector('.item-select');
+    const qtyInput = newRow.querySelector('.item-qty');
+    
+    select.value = itemId;
+    qtyInput.value = quantity;
+    
+    bindRowEvents(newRow);
     updateTotal();
-    bindRowEvents(container.lastElementChild);
   }
-
+  
   function bindRowEvents(row) {
     row.querySelector('.item-select').addEventListener('change', updateTotal);
     row.querySelector('.item-qty').addEventListener('input', updateTotal);
@@ -145,7 +158,7 @@
       updateTotal();
     });
   }
-
+  
   function updateTotal() {
     let total = 0;
     container.querySelectorAll('.item-row').forEach(row => {
@@ -156,10 +169,21 @@
     });
     totalEl.textContent = total.toFixed(2);
   }
-
+  
   document.getElementById('add-item-btn').addEventListener('click', addRow);
-
-  // start with one row
-  addRow();
+  
+  const existingItems = JSON.parse(
+    document.getElementById('order-items-data').textContent
+  );
+  
+  console.log(existingItems)
+  
+  // start with one row or Load existing items
+  if (existingItems.length > 0) {
+    console.log("ITEMS EXIST")
+    existingItems.forEach(i => addRow(i.item_id, i.quantity));
+  } else {
+    addRow();
+  }
 </script>
 {% endblock %}
